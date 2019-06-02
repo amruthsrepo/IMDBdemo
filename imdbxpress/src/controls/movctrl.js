@@ -1,9 +1,9 @@
 import mov from '../Schemas/movies'
 import act from '../Schemas/actors'
 import pro from '../Schemas/producers'
-var request = require("request")
 var fs = require('fs')
 import pos from '../Schemas/posters'
+var formidable = require('formidable')
 
 
 class movctrl {
@@ -24,7 +24,8 @@ class movctrl {
                         await act.findOne({
                             _id: ar
                         }, function (err, res) {
-                            doc[item]['act'].push(res['name'])
+                            if(res !== null)
+                                doc[item]['act'].push(res['name'])
                         })
                     }
 
@@ -39,11 +40,11 @@ class movctrl {
 
                     let post = doc[item]['poster']
                     if (post !== undefined) {
-                        console.log('')
+                        let nt = post
                         await pos.findOne({
                             _id: post
                         }, function (err, res) {
-                            doc[item]['post'] = res['buf']
+                            doc[item]['post'] = res['img']
                         })
                     }
 
@@ -67,28 +68,31 @@ class movctrl {
         form.parse(req, async function (err, fields, files) {
             let f = files[Object.keys(files)[0]]
             // console.log(fs.readFileSync(f.path))
-            console.log(fields)
+            // console.log(fields)
+            // console.log(f.name)
 
             mov.find({
                 'name': fields['name'],
                 'yor': parseInt(fields['yor'])
-            }).then(async function (doc) {
+                }).then(async function (doc) {
                 // console.log(doc)
                 if (doc.length > 0) {
                     // console.log(doc)
                     res.json({ err: 'Redundant mov' })
                 } else {
-                    pos.create({buf: fs.readFileSync(f.path)})
-                    .then(cre => {
-                        console.log(cre['_id'].toString())
+                    var newimg = new pos
+                    newimg.img.data = fs.readFileSync(f.path)
+                    newimg.img.contentType = 'image/jpeg'
+                    newimg.save(function(err,cre) {
+                        // console.log(cre.id)
                         mov.create({
                             name : fields.name,
                             yor : fields.yor,
                             plot : fields.plot,
-                            poster : cre['_id'].toString(),
+                            poster : cre.id,
                             prod : fields.prod,
                             actrs : fields.actors.split(',')
-                        })
+                        }).then(res.json({msg : 'Success'}))
                     })
                 }
             })

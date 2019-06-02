@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 const posterSchema = Schema({
-    "buf" : String
+    img: { data: Buffer, contentType: String}
 });
 
 export default model('poster',posterSchema,'posters');
