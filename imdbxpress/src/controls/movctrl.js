@@ -15,17 +15,26 @@ class movctrl {
                     return
                 }
                 let doc = JSON.parse(JSON.stringify(doc1))
+                doc.push({})
                 let lent = Object.keys(doc).length
                 for (let item in doc) {
 
-                    let actors = doc[item]['actrs']
+                    if(doc[item]['name']===undefined)   {
+                        setTimeout(() => {
+                            doc.pop()
+                            res.json(doc)
+
+                        }, 500);
+                    }
+
+                    else {let actors = doc[item]['actrs']
                     doc[item]['act'] = []
                     for (let ar of actors) {
                         await act.findOne({
                             _id: ar
                         }, function (err, res) {
                             if(res !== null)
-                                doc[item]['act'].push(res['name'])
+                                doc[item]['act'].push(res)
                         })
                     }
 
@@ -43,25 +52,15 @@ class movctrl {
                         let nt = post
                         await pos.findOne({
                             _id: post
-                        }, function (err, res) {
+                        }, await function (err, res) {
                             doc[item]['post'] = res['img']
                         })
-                    }
+                    }}
 
-                    lent -= 1
-                    if (lent === 0) res.json(doc)
                 }
             })
     }
 
-
-    updateproj(req, res) {
-        Prj.findOneAndUpdate({
-            'Project ID': req.body.pid
-        }, req.body).then(function () {
-            res.json({ msg: 'Success' })
-        })
-    }
 
     addmov(req, res) {
         var form = new formidable.IncomingForm();
