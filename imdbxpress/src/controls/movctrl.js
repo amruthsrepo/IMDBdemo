@@ -80,7 +80,7 @@ class movctrl {
                     res.json({ err: 'Redundant mov' })
                 } else {
                     var newimg = new pos
-                    newimg.img.data = fs.readFileSync(f.path)
+                    newimg.img.data = await fs.readFileSync(f.path)
                     newimg.img.contentType = 'image/jpeg'
                     newimg.save(function(err,cre) {
                         // console.log(cre.id)

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Disp from './components/Disp';
+import Forms from './components/Forms';
 
 export default class App extends Component {
 
@@ -26,12 +27,13 @@ export default class App extends Component {
             <div className="navbar-collapse collapse w-100 order-3 dual-collapse2">
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
-                  <button className="btn btn-outline-light btn-sm" type="button" onClick={this.formoff.bind(this)}>Close input forms</button>
+                  <button className="btn btn-light btn-sm" type="button" onClick={this.formoff.bind(this)}>Close input forms</button>
                 </li>
               </ul>
             </div>
           </nav>
 
+          <Forms/>
         </React.Fragment>
       )
     }
