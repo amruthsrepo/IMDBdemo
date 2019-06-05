@@ -187,11 +187,11 @@ export default class Forms extends Component {
         if (this.state.selectedFile === null) {
             alert('Please upload a poster')
             return
+        }  else if (this.state.selectedPro === null) {
+            alert('Please select the Producer')
+            return
         } else if (this.state.selectedAct === null) {
             alert('Please select the actors')
-            return
-        } else if (this.state.selectedPro === null) {
-            alert('Please select the Producer')
             return
         }
 
@@ -214,7 +214,6 @@ export default class Forms extends Component {
         var pronam = $('#pronam').val()
         var prodob = $('#prodob').val()
         var prosex = $('#prosex').val()
-        console.log(prodob.length)
         if (pronam.length < 1) {
             alert('Name of the producer cant be empty')
             return

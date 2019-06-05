@@ -19,7 +19,7 @@ class movctrl {
                 let lent = Object.keys(doc).length
                 for (let item in doc) {
 
-                    if(doc[item]['name']===undefined)   {
+                    if (doc[item]['name'] === undefined) {
                         setTimeout(() => {
                             doc.pop()
                             res.json(doc)
@@ -27,35 +27,37 @@ class movctrl {
                         }, 500);
                     }
 
-                    else {let actors = doc[item]['actrs']
-                    doc[item]['act'] = []
-                    for (let ar of actors) {
-                        await act.findOne({
-                            _id: ar
-                        }, function (err, res) {
-                            if(res !== null)
-                                doc[item]['act'].push(res)
-                        })
-                    }
+                    else {
+                        let actors = doc[item]['actrs']
+                        doc[item]['act'] = []
+                        for (let ar of actors) {
+                            await act.findOne({
+                                _id: ar
+                            }, function (err, res) {
+                                if (res !== null)
+                                    doc[item]['act'].push(res)
+                            })
+                        }
 
-                    let prod = doc[item]['prod']
-                    if (prod !== undefined) {
-                        await pro.findOne({
-                            _id: prod
-                        }, function (err, res) {
-                            doc[item]['pro'] = res['name']
-                        })
-                    }
+                        let prod = doc[item]['prod']
+                        if (prod !== undefined) {
+                            await pro.findOne({
+                                _id: prod
+                            }, function (err, res) {
+                                doc[item]['pro'] = res['name']
+                            })
+                        }
 
-                    let post = doc[item]['poster']
-                    if (post !== undefined) {
-                        let nt = post
-                        await pos.findOne({
-                            _id: post
-                        }, await function (err, res) {
-                            doc[item]['post'] = res['img']
-                        })
-                    }}
+                        let post = doc[item]['poster']
+                        if (post !== undefined) {
+                            let nt = post
+                            await pos.findOne({
+                                _id: post
+                            }, await function (err, res) {
+                                doc[item]['post'] = res['img']
+                            })
+                        }
+                    }
 
                 }
             })
@@ -73,7 +75,7 @@ class movctrl {
             mov.find({
                 'name': fields['name'],
                 'yor': parseInt(fields['yor'])
-                }).then(async function (doc) {
+            }).then(async function (doc) {
                 // console.log(doc)
                 if (doc.length > 0) {
                     // console.log(doc)
@@ -82,17 +84,65 @@ class movctrl {
                     var newimg = new pos
                     newimg.img.data = await fs.readFileSync(f.path)
                     newimg.img.contentType = 'image/jpeg'
-                    newimg.save(function(err,cre) {
+                    newimg.save(function (err, cre) {
                         // console.log(cre.id)
                         mov.create({
-                            name : fields.name,
-                            yor : fields.yor,
-                            plot : fields.plot,
-                            poster : cre.id,
-                            prod : fields.prod,
-                            actrs : fields.actors.split(',')
-                        }).then(res.json({msg : 'Success'}))
+                            name: fields.name,
+                            yor: fields.yor,
+                            plot: fields.plot,
+                            poster: cre.id,
+                            prod: fields.prod,
+                            actrs: fields.actors.split(',')
+                        }).then(res.json({ msg: 'Success' }))
                     })
+                }
+            })
+        })
+    }
+
+    updmov(req, res) {
+        var form = new formidable.IncomingForm();
+        form.parse(req, async function (err, fields, files) {
+            let filex = Object.keys(files).length > 0 ? true : false
+            let f = filex ? files[Object.keys(files)[0]] : null
+            // console.log(fs.readFileSync(f.path))
+            // console.log(fields)
+            // console.log(f.name)
+
+            mov.find({
+                '_id': fields['_id']
+            }).then(async function (doc) {
+                // console.log(doc)
+                if (doc.length > 0) {
+                    if (filex) {
+                        pos.findByIdAndDelete(doc[0].poster)
+                        var newimg = new pos
+                        newimg.img.data = await fs.readFileSync(f.path)
+                        newimg.img.contentType = 'image/jpeg'
+                        newimg.save(function (err, cre) {
+                            mov.findByIdAndUpdate(fields['_id'],{
+                                name: fields.name,
+                                yor: fields.yor,
+                                plot: fields.plot,
+                                poster: cre.id,
+                                prod: fields.prod,
+                                actrs: fields.actors.split(',')
+                            }).then(res.json({ msg: 'Success' }))
+                        })
+                    } else {
+                        mov.findByIdAndUpdate(fields['_id'],{
+                            name: fields.name,
+                            yor: fields.yor,
+                            plot: fields.plot,
+                            poster: fields.poster,
+                            prod: fields.prod,
+                            actrs: fields.actors.split(',')
+                        }).then(res.json({ msg: 'Success' }))
+                    }
+
+                } else {
+                    res.json({ err: 'Movie err' })
+
                 }
             })
         })
