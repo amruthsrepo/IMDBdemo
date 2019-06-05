@@ -10,7 +10,7 @@ After cloning the repository, please do the following if you're a windows user:
 
 ## Validations used:
 
->Any movie must have a name, poster, producer, at least 1 actor and a Year of release
+>Any movie must have a name, poster, producer, at least 1 actor and a Year of release.  
 >An actor or a producer must have name, sex, dob .  
 >Any 2 movies cannot have the same name and year of release .  
 >Any 2 actors cannot have same name and date of birth .  
