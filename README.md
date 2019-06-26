@@ -1,6 +1,5 @@
 
 # IMDBdemo
-An assignment project for DeltaX
 
 This is a MERN stack application.
 
